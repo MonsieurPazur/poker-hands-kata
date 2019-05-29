@@ -38,33 +38,37 @@ class PokerHandTest extends TestCase
      */
     public function pokerHandsProvider(): Generator
     {
-        yield 'lowest possible hand' => [
+        yield 'highest card: lowest possible hand' => [
             'input' => '2H 3H 4H 5H 7C',
             'expected' => 7
         ];
-        yield 'highest card ace' => [
+        yield 'highest card: highest card ace' => [
             'input' => '2H 3H 4H 5H AS',
             'expected' => 14
         ];
-        yield 'two fours' => [
+        yield 'pair: two fours' => [
             'input' => '2H 3H 4H 4D AS',
             'expected' => 18
         ];
-        yield 'two fives and two jacks' => [
+        yield 'two pairs: two fives and two jacks' => [
             'input' => '5H 2H JS JD 5S',
             'expected' => 44
         ];
-        yield 'three queens' => [
+        yield 'three of a kind: three queens' => [
             'input' => 'QD KH QH AS QS',
             'expected' => 67
         ];
-        yield 'straight from seven to jack' => [
+        yield 'straight: straight from seven to jack' => [
             'input' => 'JS 7H TH 9H 8D',
             'expected' => 80
         ];
-        yield 'all spades' => [
+        yield 'flush: all spades' => [
             'input' => '2S KS TS QS 6S',
             'expected' => 96
+        ];
+        yield 'full house: two queens and three nines' => [
+            'input' => '9S QH 9D QC 9C',
+            'expected' => 106
         ];
     }
 }
