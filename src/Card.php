@@ -24,7 +24,7 @@ class Card
     public const SEVEN = '7';
     public const EIGHT = '8';
     public const NINE = '9';
-    public const TEN = '10';
+    public const TEN = 'T';
     public const JACK = 'J';
     public const QUEEN = 'Q';
     public const KING = 'K';

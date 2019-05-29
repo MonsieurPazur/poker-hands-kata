@@ -58,5 +58,9 @@ class PokerHandTest extends TestCase
             'input' => 'QD KH QH AS QS',
             'expected' => 67
         ];
+        yield 'straight from seven to jack' => [
+            'input' => 'JS 7H TH 9H 8D',
+            'expected' => 80
+        ];
     }
 }

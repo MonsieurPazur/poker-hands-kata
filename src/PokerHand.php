@@ -17,6 +17,7 @@ class PokerHand
      * @var array list of methods to check (in order) for different hands
      */
     private const CHECKERS = [
+        'checkStraight',
         'checkThreeOfAKind',
         'checkTwoPairs',
         'checkPair',
@@ -27,8 +28,12 @@ class PokerHand
      * @var int bonus rank for a specific hand
      */
     private const BONUS_PAIR = 14;
+
     private const BONUS_TWO_PAIRS = 28;
+
     private const BONUS_THREE_OF_A_KIND = 55;
+
+    private const BONUS_STRAIGHT = 69;
 
     /**
      * @var Card[] $cards list of cards in hand
@@ -73,6 +78,9 @@ class PokerHand
         foreach ($cards as $card) {
             $this->cards[] = new Card($card);
         }
+        usort($this->cards, static function (Card $a, Card $b) {
+            return $a->getRank() > $b->getRank();
+        });
     }
 
     /**
@@ -90,19 +98,37 @@ class PokerHand
     }
 
     /**
+     * Searches for straight in hand.
+     *
+     * @return bool true if found in hand
+     */
+    private function checkStraight(): bool
+    {
+        foreach ($this->cards as $i => $card) {
+            if (isset($this->cards[$i + 1]) && !$this->areCardsNeighbours($card, $this->cards[$i + 1])) {
+                return false;
+            }
+        }
+        $this->rank = self::BONUS_STRAIGHT + end($this->cards)->getRank();
+        return true;
+    }
+
+    /**
      * Searches for three of a kind in hand.
      *
      * @return bool true if found in hand
      */
     private function checkThreeOfAKind(): bool
     {
-        for ($i = 0, $iMax = count($this->cards); $i < $iMax; $i++) {
-            $same = 1;
-            for ($j = $i + 1, $jMax = count($this->cards); $j < $jMax; $j++) {
-                if ($this->areCardsSameValue($this->cards[$i], $this->cards[$j]) && 3 === ++$same) {
-                    $this->rank = self::BONUS_THREE_OF_A_KIND + $this->cards[$i]->getRank();
+        $same = 1;
+        foreach ($this->cards as $i => $card) {
+            if (isset($this->cards[$i + 1]) && $this->areCardsSameValue($card, $this->cards[$i + 1])) {
+                if (3 === ++$same) {
+                    $this->rank = self::BONUS_THREE_OF_A_KIND + $card->getRank();
                     return true;
                 }
+            } else {
+                $same = 1;
             }
         }
         return false;
@@ -115,19 +141,16 @@ class PokerHand
      */
     private function checkTwoPairs(): bool
     {
-        $rank = self::BONUS_TWO_PAIRS;
         $pairs = 0;
-        for ($i = 0, $iMax = count($this->cards); $i < $iMax; $i++) {
-            for ($j = $i + 1, $jMax = count($this->cards); $j < $jMax; $j++) {
-                if ($this->areCardsSameValue($this->cards[$i], $this->cards[$j])) {
-                    $rank += $this->cards[$i]->getRank();
-                    $pairs++;
+        $rank = 0;
+        foreach ($this->cards as $i => $card) {
+            if (isset($this->cards[$i + 1]) && $this->areCardsSameValue($card, $this->cards[$i + 1])) {
+                $rank += $this->cards[$i]->getRank();
+                if (2 === ++$pairs) {
+                    $this->rank = self::BONUS_TWO_PAIRS + $rank;
+                    return true;
                 }
             }
-        }
-        if (2 === $pairs) {
-            $this->rank = $rank;
-            return true;
         }
         return false;
     }
@@ -139,12 +162,10 @@ class PokerHand
      */
     private function checkPair(): bool
     {
-        for ($i = 0, $iMax = count($this->cards); $i < $iMax; $i++) {
-            for ($j = $i + 1, $jMax = count($this->cards); $j < $jMax; $j++) {
-                if ($this->areCardsSameValue($this->cards[$i], $this->cards[$j])) {
-                    $this->rank = self::BONUS_PAIR + $this->cards[$i]->getRank();
-                    return true;
-                }
+        foreach ($this->cards as $i => $card) {
+            if (isset($this->cards[$i + 1]) && $this->areCardsSameValue($card, $this->cards[$i + 1])) {
+                $this->rank = self::BONUS_PAIR + $card->getRank();
+                return true;
             }
         }
         return false;
@@ -176,5 +197,18 @@ class PokerHand
     private function areCardsSameValue(Card $first, Card $second): bool
     {
         return $first->getValue() === $second->getValue();
+    }
+
+    /**
+     * Checks whether two given cards are next to each other (in terms of value)
+     *
+     * @param Card $first card we want to check
+     * @param Card $second card we want to check against
+     *
+     * @return bool true if cards are next to each other
+     */
+    private function areCardsNeighbours(Card $first, Card $second): bool
+    {
+        return abs($first->getRank() - $second->getRank()) === 1;
     }
 }
