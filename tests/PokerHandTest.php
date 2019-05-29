@@ -62,5 +62,9 @@ class PokerHandTest extends TestCase
             'input' => 'JS 7H TH 9H 8D',
             'expected' => 80
         ];
+        yield 'all spades' => [
+            'input' => '2S KS TS QS 6S',
+            'expected' => 96
+        ];
     }
 }
