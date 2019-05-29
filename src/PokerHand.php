@@ -17,9 +17,16 @@ class PokerHand
      * @var array list of methods to check (in order) for different hands
      */
     private const CHECKERS = [
+        'checkTwoPairs',
         'checkPair',
         'checkHighestCard'
     ];
+
+    /**
+     * @var int bonus rank for a specific hand
+     */
+    private const BONUS_PAIR = 14;
+    private const BONUS_TWO_PAIRS = 28;
 
     /**
      * @var Card[] $cards list of cards in hand
@@ -81,7 +88,31 @@ class PokerHand
     }
 
     /**
-     * Searches for single pair in hand
+     * Searches for two pairs in hand.
+     *
+     * @return bool true if found in hand
+     */
+    private function checkTwoPairs(): bool
+    {
+        $rank = self::BONUS_TWO_PAIRS;
+        $pairs = 0;
+        for ($i = 0, $iMax = count($this->cards); $i < $iMax; $i++) {
+            for ($j = $i + 1, $jMax = count($this->cards); $j < $jMax; $j++) {
+                if ($this->areCardsSameValue($this->cards[$i], $this->cards[$j])) {
+                    $rank += $this->cards[$i]->getRank();
+                    $pairs++;
+                }
+            }
+        }
+        if (2 === $pairs) {
+            $this->rank = $rank;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Searches for single pair in hand.
      *
      * @return bool true if found in hand
      */
@@ -90,7 +121,7 @@ class PokerHand
         for ($i = 0, $iMax = count($this->cards); $i < $iMax; $i++) {
             for ($j = $i + 1, $jMax = count($this->cards); $j < $jMax; $j++) {
                 if ($this->areCardsSameValue($this->cards[$i], $this->cards[$j])) {
-                    $this->rank = 14 + 2 * $this->cards[$i]->getValue();
+                    $this->rank = self::BONUS_PAIR + $this->cards[$i]->getRank();
                     return true;
                 }
             }

@@ -48,7 +48,11 @@ class PokerHandTest extends TestCase
         ];
         yield 'two fours' => [
             'input' => '2H 3H 4H 4D AS',
-            'expected' => 22
+            'expected' => 18
+        ];
+        yield 'two fives and two jacks' => [
+            'input' => '5H 2H JS JD 5S',
+            'expected' => 44
         ];
     }
 }
