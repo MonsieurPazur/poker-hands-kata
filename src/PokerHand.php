@@ -14,9 +14,22 @@ namespace App;
 class PokerHand
 {
     /**
+     * @var array list of methods to check (in order) for different hands
+     */
+    private const CHECKERS = [
+        'checkPair',
+        'checkHighestCard'
+    ];
+
+    /**
      * @var Card[] $cards list of cards in hand
      */
     private $cards;
+
+    /**
+     * @var int $rank rank value of this hand based on cards
+     */
+    private $rank;
 
     /**
      * PokerHand constructor.
@@ -25,10 +38,8 @@ class PokerHand
      */
     public function __construct(string $hand)
     {
-        $cards = explode(' ', $hand);
-        foreach ($cards as $card) {
-            $this->cards[] = new Card($card);
-        }
+        $this->parseCards($hand);
+        $this->rank = 0;
     }
 
     /**
@@ -38,20 +49,80 @@ class PokerHand
      */
     public function getRank(): int
     {
-        return $this->getHighestCardRank();
+        $this->handleRank();
+        return $this->rank;
     }
 
     /**
-     * Gets rank of the highest card in hand.
+     * Generates list of cards based on given hand string
      *
-     * @return int rank of the highest card in hand
+     * @param string $hand symbols of cards
      */
-    private function getHighestCardRank(): int
+    private function parseCards(string $hand): void
+    {
+        $cards = explode(' ', $hand);
+        foreach ($cards as $card) {
+            $this->cards[] = new Card($card);
+        }
+    }
+
+    /**
+     * Handles cards and calculates rank.
+     */
+    private function handleRank(): void
+    {
+        // Loop over all of different checkers.
+        foreach (self::CHECKERS as $checker) {
+            // If a specific hand is found, there's no need to look further.
+            if ($this->$checker()) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * Searches for single pair in hand
+     *
+     * @return bool true if found in hand
+     */
+    private function checkPair(): bool
+    {
+        for ($i = 0, $iMax = count($this->cards); $i < $iMax; $i++) {
+            for ($j = $i + 1, $jMax = count($this->cards); $j < $jMax; $j++) {
+                if ($this->areCardsSameValue($this->cards[$i], $this->cards[$j])) {
+                    $this->rank = 14 + 2 * $this->cards[$i]->getValue();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Searches for a highest card in hand.
+     *
+     * @return bool true if found in hand
+     */
+    private function checkHighestCard(): bool
     {
         $highest = 0;
         foreach ($this->cards as $card) {
             $highest = $highest >= $card->getRank() ? $highest : $card->getRank();
         }
-        return $highest;
+        $this->rank = $highest;
+        return true;
+    }
+
+    /**
+     * Checks whether two given cards are of the same value.
+     *
+     * @param Card $first card we want to check
+     * @param Card $second card we want to check against
+     *
+     * @return bool true if both cards are of the same value
+     */
+    private function areCardsSameValue(Card $first, Card $second): bool
+    {
+        return $first->getValue() === $second->getValue();
     }
 }

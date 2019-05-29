@@ -42,5 +42,13 @@ class PokerHandTest extends TestCase
             'input' => '2H 3H 4H 5H 7C',
             'expected' => 7
         ];
+        yield 'highest card ace' => [
+            'input' => '2H 3H 4H 5H AS',
+            'expected' => 14
+        ];
+        yield 'two fours' => [
+            'input' => '2H 3H 4H 4D AS',
+            'expected' => 22
+        ];
     }
 }
