@@ -17,6 +17,7 @@ class PokerHand
      * @var array list of methods to check (in order) for different hands
      */
     private const CHECKERS = [
+        'checkThreeOfAKind',
         'checkTwoPairs',
         'checkPair',
         'checkHighestCard'
@@ -27,6 +28,7 @@ class PokerHand
      */
     private const BONUS_PAIR = 14;
     private const BONUS_TWO_PAIRS = 28;
+    private const BONUS_THREE_OF_A_KIND = 55;
 
     /**
      * @var Card[] $cards list of cards in hand
@@ -85,6 +87,25 @@ class PokerHand
                 break;
             }
         }
+    }
+
+    /**
+     * Searches for three of a kind in hand.
+     *
+     * @return bool true if found in hand
+     */
+    private function checkThreeOfAKind(): bool
+    {
+        for ($i = 0, $iMax = count($this->cards); $i < $iMax; $i++) {
+            $same = 1;
+            for ($j = $i + 1, $jMax = count($this->cards); $j < $jMax; $j++) {
+                if ($this->areCardsSameValue($this->cards[$i], $this->cards[$j]) && 3 === ++$same) {
+                    $this->rank = self::BONUS_THREE_OF_A_KIND + $this->cards[$i]->getRank();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

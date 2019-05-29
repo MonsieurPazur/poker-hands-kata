@@ -54,5 +54,9 @@ class PokerHandTest extends TestCase
             'input' => '5H 2H JS JD 5S',
             'expected' => 44
         ];
+        yield 'three queens' => [
+            'input' => 'QD KH QH AS QS',
+            'expected' => 67
+        ];
     }
 }
