@@ -41,6 +41,11 @@ class PokerHand
     private const BONUS_STRAIGHT_FLUSH = 125;
 
     /**
+     * @var string $name name of a player
+     */
+    private $name;
+
+    /**
      * @var Card[] $cards list of cards in hand
      */
     private $cards;
@@ -58,13 +63,25 @@ class PokerHand
     /**
      * PokerHand constructor.
      *
+     * @param string $name
      * @param string $hand
      */
-    public function __construct(string $hand)
+    public function __construct(string $name, string $hand)
     {
+        $this->name = $name;
         $this->parseCards($hand);
         $this->rank = 0;
         $this->reason = '';
+    }
+
+    /**
+     * Gets this player's name.
+     *
+     * @return string name of a player
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     /**
@@ -87,6 +104,25 @@ class PokerHand
     {
         $this->handleRank();
         return $this->reason;
+    }
+
+    /**
+     * Compares two poker hands and gets text outcome.
+     *
+     * @param PokerHand $other hand we compare against
+     *
+     * @return string text description of the outcome
+     */
+    public function compare(PokerHand $other): string
+    {
+        if ($this->getRank() > $other->getRank()) {
+            $outcome = $this->getName() . ' wins with ' . $this->getReason();
+        } elseif ($this->getRank() < $other->getRank()) {
+            $outcome = $other->getName() . ' wins with ' . $other->getReason();
+        } else {
+            $outcome = 'Tie';
+        }
+        return $outcome;
     }
 
     /**

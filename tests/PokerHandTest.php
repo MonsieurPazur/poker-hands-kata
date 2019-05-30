@@ -27,7 +27,7 @@ class PokerHandTest extends TestCase
      */
     public function testRankPokerHand(string $input, int $expected): void
     {
-        $hand = new PokerHand($input);
+        $hand = new PokerHand('Bob', $input);
         $this->assertEquals($expected, $hand->getRank());
     }
 
@@ -41,8 +41,26 @@ class PokerHandTest extends TestCase
      */
     public function testRankReason(string $input, string $expected): void
     {
-        $hand = new PokerHand($input);
+        $hand = new PokerHand('Bob', $input);
         $this->assertEquals($expected, $hand->getReason());
+    }
+
+    /**
+     * Tests comparing two hands of cards.
+     *
+     * @dataProvider compareProvider
+     *
+     * @param array $first first player's hand
+     * @param array $second seconds player's hand
+     * @param string $expected text description of the outcome
+     */
+    public function testComparePokerHands(array $first, array $second, string $expected): void
+    {
+        $firstHand = new PokerHand($first['name'], $first['cards']);
+        $secondHand = new PokerHand($second['name'], $second['cards']);
+
+        $outcome = $firstHand->compare($secondHand);
+        $this->assertEquals($expected, $outcome);
     }
 
     /**
@@ -140,6 +158,48 @@ class PokerHandTest extends TestCase
         yield 'straight flush: from five to nine' => [
             'input' => '8H 6H 7H 9H 5H',
             'expected' => 'straight flush: hearts, from five to nine'
+        ];
+    }
+
+    /**
+     * Provides data for comparing two sets of poker hands.
+     *
+     * @return Generator
+     */
+    public function compareProvider(): Generator
+    {
+        yield 'bob wins with high card' => [
+            'first' => [
+                'name' => 'Bob',
+                'cards' => '2C 3H 4S 8C AH'
+            ],
+            'second' => [
+                'name' => 'John',
+                'cards' => '2H 3D 5S 9C KD'
+            ],
+            'expected' => 'Bob wins with high card: ace'
+        ];
+        yield 'john wins with full house' => [
+            'first' => [
+                'name' => 'Bob',
+                'cards' => '2S 8S AS QS 3S'
+            ],
+            'second' => [
+                'name' => 'John',
+                'cards' => '2H 4S 4C 2D 4H'
+            ],
+            'expected' => 'John wins with full house: four over two'
+        ];
+        yield 'tie with high card' => [
+            'first' => [
+                'name' => 'Bob',
+                'cards' => '2H 3D 5S 9C KD'
+            ],
+            'second' => [
+                'name' => 'John',
+                'cards' => '2D 3H 5C 9S KH'
+            ],
+            'expected' => 'Tie'
         ];
     }
 }
