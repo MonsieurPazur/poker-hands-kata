@@ -17,6 +17,7 @@ class PokerHand
      * @var array list of methods to check (in order) for different hands
      */
     private const CHECKERS = [
+        'checkFullHouse',
         'checkFlush',
         'checkStraight',
         'checkThreeOfAKind',
@@ -33,6 +34,7 @@ class PokerHand
     private const BONUS_THREE_OF_A_KIND = 55;
     private const BONUS_STRAIGHT = 69;
     private const BONUS_FLUSH = 83;
+    private const BONUS_FULL_HOUSE = 97;
 
     /**
      * @var Card[] $cards list of cards in hand
@@ -94,6 +96,67 @@ class PokerHand
                 break;
             }
         }
+    }
+
+    /**
+     * Searches for straight flush in hand.
+     *
+     * @return bool true if found in hand
+     */
+    private function checkStraightFlush(): bool
+    {
+    }
+
+    /**
+     * Searches for four of a kind in hand.
+     *
+     * @return bool true if found in hand
+     */
+    private function checkFourOfAKind(): bool
+    {
+    }
+
+    /**
+     * Searches for flush in hand.
+     *
+     * @return bool true if found in hand
+     */
+    private function checkFullHouse(): bool
+    {
+        $three = null;
+        $pair = null;
+        $same = 1;
+        for ($i = 0; $i < count($this->cards) - 1; $i++) {
+            if ($this->areCardsSameValue($this->cards[$i], $this->cards[$i + 1])) {
+                $same++;
+
+                // There are three scenarios to take in consideration here.
+                // Given cards array is sorted:
+                //
+                // 1. There's no three and/or pair in hand (pretty obvious).
+                // 2. Pair first then three (if first pair is found, we leave it, when we find next one).
+                if (2 === $same && null === $pair) {
+                    $pair = $this->cards[$i];
+                }
+
+                // 3. Three first then pair (we cancel first pair and look for it in the last two cards).
+                if (3 === $same) {
+                    $three = $this->cards[$i];
+                    if (null !== $pair && $this->areCardsSameValue($three, $pair)) {
+                        $pair = null;
+                    }
+                }
+            } else {
+                $same = 1;
+            }
+        }
+
+        // This is essentialy checking first scenario.
+        if (null !== $pair && null !== $three) {
+            $this->rank = self::BONUS_FULL_HOUSE + $three->getRank();
+            return true;
+        }
+        return false;
     }
 
     /**
