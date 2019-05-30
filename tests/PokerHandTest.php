@@ -74,5 +74,9 @@ class PokerHandTest extends TestCase
             'input' => 'AS AH 7D AC AD',
             'expected' => 125
         ];
+        yield 'straight flush: from five to nine' => [
+            'input' => '8H 6H 7H 9H 5H',
+            'expected' => 134
+        ];
     }
 }

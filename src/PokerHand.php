@@ -17,6 +17,7 @@ class PokerHand
      * @var array list of methods to check (in order) for different hands
      */
     private const CHECKERS = [
+        'checkStraightFlush',
         'checkFourOfAKind',
         'checkFullHouse',
         'checkFlush',
@@ -37,6 +38,7 @@ class PokerHand
     private const BONUS_FLUSH = 83;
     private const BONUS_FULL_HOUSE = 97;
     private const BONUS_FOUR_OF_A_KIND = 111;
+    private const BONUS_STRAIGHT_FLUSH = 125;
 
     /**
      * @var Card[] $cards list of cards in hand
@@ -107,6 +109,15 @@ class PokerHand
      */
     private function checkStraightFlush(): bool
     {
+        for ($i = 0; $i < count($this->cards) - 1; $i++) {
+            if (!$this->areCardsNeighbours($this->cards[$i], $this->cards[$i + 1])
+                || !$this->areCardsSameSuit($this->cards[$i], $this->cards[$i + 1])
+            ) {
+                return false;
+            }
+        }
+        $this->rank = self::BONUS_STRAIGHT_FLUSH + end($this->cards)->getRank();
+        return true;
     }
 
     /**
