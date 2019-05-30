@@ -70,5 +70,9 @@ class PokerHandTest extends TestCase
             'input' => '9S QH 9D QC 9C',
             'expected' => 106
         ];
+        yield 'four of a kind: four aces and a seven' => [
+            'input' => 'AS AH 7D AC AD',
+            'expected' => 125
+        ];
     }
 }

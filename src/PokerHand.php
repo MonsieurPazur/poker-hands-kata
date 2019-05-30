@@ -17,6 +17,7 @@ class PokerHand
      * @var array list of methods to check (in order) for different hands
      */
     private const CHECKERS = [
+        'checkFourOfAKind',
         'checkFullHouse',
         'checkFlush',
         'checkStraight',
@@ -35,6 +36,7 @@ class PokerHand
     private const BONUS_STRAIGHT = 69;
     private const BONUS_FLUSH = 83;
     private const BONUS_FULL_HOUSE = 97;
+    private const BONUS_FOUR_OF_A_KIND = 111;
 
     /**
      * @var Card[] $cards list of cards in hand
@@ -114,6 +116,18 @@ class PokerHand
      */
     private function checkFourOfAKind(): bool
     {
+        $same = 1;
+        for ($i = 0; $i < count($this->cards) - 1; $i++) {
+            if ($this->areCardsSameValue($this->cards[$i], $this->cards[$i + 1])) {
+                if (4 === ++$same) {
+                    $this->rank = self::BONUS_FOUR_OF_A_KIND + $this->cards[$i]->getRank();
+                    return true;
+                }
+            } else {
+                $same = 1;
+            }
+        }
+        return false;
     }
 
     /**
