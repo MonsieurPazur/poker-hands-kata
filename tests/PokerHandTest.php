@@ -32,6 +32,15 @@ class PokerHandTest extends TestCase
     }
 
     /**
+     * Tests reason for getting specific rank.
+     */
+    public function testRankReason(): void
+    {
+        $hand = new PokerHand('QD KH QH AS QS');
+        $this->assertEquals('three of a kind: queen', $hand->getReason());
+    }
+
+    /**
      * Provides hands of cards.
      *
      * @return Generator

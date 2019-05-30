@@ -39,6 +39,35 @@ class Card
     public const SPADES = 'S';
 
     /**
+     * @var array text description of a single card's value
+     */
+    public const NAME = [
+        self::TWO => 'two',
+        self::THREE => 'three',
+        self::FOUR => 'four',
+        self::FIVE => 'five',
+        self::SIX => 'six',
+        self::SEVEN => 'seven',
+        self::EIGHT => 'eight',
+        self::NINE => 'nine',
+        self::TEN => 'ten',
+        self::JACK => 'jack',
+        self::QUEEN => 'queen',
+        self::KING => 'king',
+        self::ACE => 'ace'
+    ];
+
+    /**
+     * @var array text description of a single card's suit
+     */
+    public const SUIT_NAME = [
+        self::CLUBS => 'clubs',
+        self::DIAMONDS => 'diamonds',
+        self::HEARTS => 'hearts',
+        self::SPADES => 'spades'
+    ];
+
+    /**
      * @var array rank of a single card (based on value only)
      */
     private const RANK = [
@@ -107,5 +136,25 @@ class Card
     public function getRank(): int
     {
         return self::RANK[$this->value];
+    }
+
+    /**
+     * Gets text representation of this card's value.
+     *
+     * @return string text representation
+     */
+    public function getName(): string
+    {
+        return self::NAME[$this->value];
+    }
+
+    /**
+     * Gets text representation of this card's suit.
+     *
+     * @return string text representation
+     */
+    public function getSuitName(): string
+    {
+        return self::SUIT_NAME[$this->suit];
     }
 }

@@ -60,6 +60,34 @@ class CardTest extends TestCase
     }
 
     /**
+     * Tests name of a single card.
+     *
+     * @dataProvider namesProvider
+     *
+     * @param string $input value + suit
+     * @param string $expected name of card
+     */
+    public function testCardName(string $input, string $expected): void
+    {
+        $card = new Card($input);
+        $this->assertEquals($expected, $card->getName());
+    }
+
+    /**
+     * Tests suit name of a single card.
+     *
+     * @dataProvider suitNamesProvider
+     *
+     * @param string $input value + suit
+     * @param string $expected suit name of card
+     */
+    public function testCardSuitName(string $input, string $expected): void
+    {
+        $card = new Card($input);
+        $this->assertEquals($expected, $card->getSuitName());
+    }
+
+    /**
      * Provides data for suits tests.
      *
      * @return Generator
@@ -111,6 +139,40 @@ class CardTest extends TestCase
         yield 'QUEEN of hearts' => [
             'input' => 'QH',
             'expected' => 12
+        ];
+    }
+
+    /**
+     * Provides data for name tests.
+     *
+     * @return Generator
+     */
+    public function namesProvider(): Generator
+    {
+        yield 'Eight of spades' => [
+            'input' => '8S',
+            'expected' => Card::NAME[Card::EIGHT]
+        ];
+        yield 'Queen of hearts' => [
+            'input' => 'QH',
+            'expected' => Card::NAME[Card::QUEEN]
+        ];
+    }
+
+    /**
+     * Provides data for suit name tests.
+     *
+     * @return Generator
+     */
+    public function suitNamesProvider(): Generator
+    {
+        yield 'Eight of spades' => [
+            'input' => '8S',
+            'expected' => Card::SUIT_NAME[Card::SPADES]
+        ];
+        yield 'Queen of hearts' => [
+            'input' => 'QH',
+            'expected' => Card::SUIT_NAME[Card::HEARTS]
         ];
     }
 }

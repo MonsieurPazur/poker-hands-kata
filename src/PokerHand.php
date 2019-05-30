@@ -51,6 +51,11 @@ class PokerHand
     private $rank;
 
     /**
+     * @var string $reason text description of this hand
+     */
+    private $reason;
+
+    /**
      * PokerHand constructor.
      *
      * @param string $hand
@@ -59,6 +64,7 @@ class PokerHand
     {
         $this->parseCards($hand);
         $this->rank = 0;
+        $this->reason = '';
     }
 
     /**
@@ -70,6 +76,17 @@ class PokerHand
     {
         $this->handleRank();
         return $this->rank;
+    }
+
+    /**
+     * Represents hand with text description, reason for a specific cards rank.
+     *
+     * @return string reason for a specific rank
+     */
+    public function getReason(): string
+    {
+        $this->handleRank();
+        return $this->reason;
     }
 
     /**
@@ -117,6 +134,9 @@ class PokerHand
             }
         }
         $this->rank = self::BONUS_STRAIGHT_FLUSH + end($this->cards)->getRank();
+        $this->reason = 'straight flush: ' . $this->cards[0]->getSuitName()
+            . ', from '. $this->cards[0]->getName()
+            . ' to ' . end($this->cards)->getName();
         return true;
     }
 
@@ -132,6 +152,7 @@ class PokerHand
             if ($this->areCardsSameValue($this->cards[$i], $this->cards[$i + 1])) {
                 if (4 === ++$same) {
                     $this->rank = self::BONUS_FOUR_OF_A_KIND + $this->cards[$i]->getRank();
+                    $this->reason = 'four of a kind: ' . $this->cards[$i]->getName();
                     return true;
                 }
             } else {
@@ -179,6 +200,7 @@ class PokerHand
         // This is essentialy checking first scenario.
         if (null !== $pair && null !== $three) {
             $this->rank = self::BONUS_FULL_HOUSE + $three->getRank();
+            $this->reason = 'full house: ' . $three->getName() . ' over ' . $pair->getName();
             return true;
         }
         return false;
@@ -197,6 +219,7 @@ class PokerHand
             }
         }
         $this->rank = self::BONUS_FLUSH + end($this->cards)->getRank();
+        $this->reason = 'flush: ' . $this->cards[0]->getSuitName();
         return true;
     }
 
@@ -213,6 +236,7 @@ class PokerHand
             }
         }
         $this->rank = self::BONUS_STRAIGHT + end($this->cards)->getRank();
+        $this->reason = 'straight: from ' . $this->cards[0]->getName() . ' to ' . end($this->cards)->getName();
         return true;
     }
 
@@ -228,6 +252,7 @@ class PokerHand
             if ($this->areCardsSameValue($this->cards[$i], $this->cards[$i + 1])) {
                 if (3 === ++$same) {
                     $this->rank = self::BONUS_THREE_OF_A_KIND + $this->cards[$i]->getRank();
+                    $this->reason = 'three of a kind: ' . $this->cards[$i]->getName();
                     return true;
                 }
             } else {
@@ -246,11 +271,16 @@ class PokerHand
     {
         $pairs = 0;
         $rank = 0;
+        $firstPair = null;
         for ($i = 0; $i < count($this->cards) - 1; $i++) {
             if ($this->areCardsSameValue($this->cards[$i], $this->cards[$i + 1])) {
                 $rank += $this->cards[$i]->getRank();
+                if (null === $firstPair) {
+                    $firstPair = $this->cards[$i];
+                }
                 if (2 === ++$pairs) {
                     $this->rank = self::BONUS_TWO_PAIRS + $rank;
+                    $this->reason = 'two pairs: ' . $this->cards[$i]->getName() . ' and ' . $firstPair->getName();
                     return true;
                 }
             }
@@ -268,6 +298,7 @@ class PokerHand
         for ($i = 0; $i < count($this->cards) - 1; $i++) {
             if ($this->areCardsSameValue($this->cards[$i], $this->cards[$i + 1])) {
                 $this->rank = self::BONUS_PAIR + $this->cards[$i]->getRank();
+                $this->reason = 'pair: ' . $this->cards[$i]->getName();
                 return true;
             }
         }
@@ -281,11 +312,9 @@ class PokerHand
      */
     private function checkHighestCard(): bool
     {
-        $highest = 0;
-        foreach ($this->cards as $card) {
-            $highest = $highest >= $card->getRank() ? $highest : $card->getRank();
-        }
-        $this->rank = $highest;
+        $highest = end($this->cards);
+        $this->rank = $highest->getRank();
+        $this->reason = 'high card: ' . $highest->getName();
         return true;
     }
 
